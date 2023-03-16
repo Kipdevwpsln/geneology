@@ -1,0 +1,44 @@
+<html>
+
+<body>
+    <form method="POST" action="submit.php">
+        <div class="form-group">
+            <label for="nom">Nom</label>
+            <input type="text" class="form-control" id="nom" name="nom" value="<?php echo $nome; ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="prenom">Prenom</label>
+            <input type="text" class="form-control" id="prenom" name="prenom" value="<?php echo $prenom; ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="date_naisance">Date de naissance</label>
+            <input type="text" class="form-control" id="date_naisance" name="date_naisance" value="<?php echo $date_naisance; ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="date_deces">Date de décès</label>
+            <input type="date" class="form-control" id="date_deces" name="date_deces" value="<?php echo $date_deces; ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="lieu_naissance">Lieu de naissance</label>
+            <input type="text" class="form-control" id="lieu_naissance" name="lieu_naissance" value="<?php echo $lieu_naissance; ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="lieu_dece">Lieu de décès</label>
+            <input type="text" class="form-control" id="lieu_dece" name="lieu_dece" value="<?php echo $lieu_dece; ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="numero_geneologic">Numéro généalogique</label>
+            <input type="text" class="form-control" id="numero_geneologic" name="numero_geneologic" value="<?php echo $numero_geneologic; ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="lien_image">Lien de l'image</label>
+            <input type="text" class="form-control" id="lien_image" name="lien_image" value="<?php echo $lien_image; ?>" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter une personne</button>
+    </form>
+
+
+
+</body>
+
+</html>
