@@ -92,9 +92,9 @@ function createPerson()
             $stmt->bindParam(':numero_geneologic', $numero_geneologic);
             $stmt->bindParam(':lien_image', $lien_image);
             $stmt->execute();
-
+            $id_person = $conn->lastInsertId();
             // redirect to success page
-            header('Location: success.php');
+            header("Location: /?idperson='.$id_person.'");
             exit();
         } catch (PDOException $e) {
             echo $e;
@@ -105,7 +105,7 @@ function createPerson()
         $id_person = $_GET['idperson'];
         $form_title = '<h2>Mise à jour des informations pour ' . $nom . '</h2>';
         $value_btn_submit = "mise à jour";
-        $btn_publish = '<button type="submit" class="btn btn-secondery">Rendre publique</button>';
+        $btn_publish = '<button type="submit" name = "publish" class="btn btn-secondery">Rendre publique</button>';
         $form_action = $permelink . '/?idperson=' . $id_person;
 
         //if submit button is clicked
@@ -142,6 +142,7 @@ function createPerson()
                 </script>';
             }
         }
+        if(isset($_POST['btn_publish']))
     }
     //Note: permerlink become form action
     $content = '
@@ -179,7 +180,7 @@ function createPerson()
     <label for="image">Photo</label>
     <input type="file" class="form-control" id="image" name="image" value="' . $lien_image . '" required>
   </div>
-  <button type="submit" class="btn btn-primary">Ajouter une personne</button>
+  <button type="submit" class="btn btn-primary" name ="submit">'.$value_btn_submit.'</button>
   ' . $btn_publish . '
 </form>
 ';
