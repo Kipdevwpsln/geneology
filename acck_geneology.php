@@ -13,10 +13,92 @@ if (!defined('ABSPATH')) {
 
 function acck_genealogy()
 {
-    //get the permerlink in which the short code is put
+    $content = '';
+    //create tables if the do not exist table
+    $sql_create='
+    DROP TABLE IF EXISTS `union` ;
+
+CREATE TABLE IF NOT EXISTS .`union` (
+  `idunion` INT NOT NULL,
+  `type_union` VARCHAR(45) NOT NULL,
+  `date_debut` DATE NULL,
+  `lieu_evenement` VARCHAR(45) NULL,
+  `date_fin` DATE NULL,
+  PRIMARY KEY (`idunion`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `relation`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `relation` ;
+
+CREATE TABLE IF NOT EXISTS .`relation` (
+  `id_relation` INT NOT NULL,
+  `type_relation` VARCHAR(45) NULL,
+  `id_parent` VARCHAR(45) NULL,
+  `id_epouse` VARCHAR(45) NULL,
+  `id_epous` VARCHAR(45) NULL,
+  `persones_idpersones` INT NOT NULL,
+  `persones_Source_idSource` INT NOT NULL,
+  `union_idunion` INT NOT NULL,
+  PRIMARY KEY (`id_relation`),
+  INDEX `fk_relation_union1_idx` (`union_idunion` ASC) VISIBLE,
+  CONSTRAINT `fk_relation_union1`
+    FOREIGN KEY (`union_idunion`)
+    REFERENCES .`union` (`idunion`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `personnes`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `personnes` ;
+
+CREATE TABLE IF NOT EXISTS .`personnes` (
+  `noGeneologique` INT NOT NULL AUTO_INCREMENT,
+  `nom` VARCHAR(45) NOT NULL,
+  `prenom` VARCHAR(45) NOT NULL,
+  `nom_jeune_fille` VARCHAR(45) NULL,
+  `observation` VARCHAR(45) NULL,
+  `date_naisance` VARCHAR(45) NOT NULL,
+  `lieu_naissance` VARCHAR(45) NULL,
+  `date_mariage` VARCHAR(45) NULL,
+  `lieu_mariage` VARCHAR(45) NULL,
+  `lieu_dece` VARCHAR(45) NULL,
+  `note` VARCHAR(45) NULL,
+  `lien_image` VARCHAR(45) NULL,
+  `relation_id_relation` INT NOT NULL,
+  PRIMARY KEY (`noGeneologique`),
+  INDEX `fk_personnes_relation1_idx` (`relation_id_relation` ASC) VISIBLE,
+  CONSTRAINT `fk_personnes_relation1`
+    FOREIGN KEY (`relation_id_relation`)
+    REFERENCES .`relation` (`id_relation`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+';
+    try {
+        $conn = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET, DB_USER, DB_PASSWORD);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stmt = $conn->prepare($sql_create);
+            $stmt->execute();
+            $content .='<h2>tables created</h2>';
+    } catch (PDOException $e) {
+        echo 'Les tables n\'ont pas étaits crée '.$e;
+    }
+    
+    //get the permerlink of the page in which the short code is put
     $permelink = get_permalink(post, leavename);
 
-    $content = '';
+    
     $content .= '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous"';
     if (isset($_POST)) {
         //recover the variables from form
@@ -75,8 +157,8 @@ function acck_genealogy()
             </script>';
         }
     }
-    //create_person if idperson is not set
-    if (isset($_POST) && isset($_POST['btn_create']) && !isset($_POST['idperson'])) {
+    //create_person if noGeneologique is not set
+    if (isset($_POST) && isset($_POST['btn_create']) && !isset($_POST['noGeneologique'])) {
         // prepare SQL statement
         $sql = "INSERT INTO persons (Nome, prenom, date_naisance, date_deces, lieu_naissance, lieu_dece, numero_geneologic, lien_image)
         VALUES (:Nome, :prenom, :date_naisance, :date_deces, :lieu_naissance, :lieu_dece, :numero_geneologic, :lien_image)";
@@ -99,39 +181,39 @@ function acck_genealogy()
             $stmt->bindParam(':note', $note);
             $stmt->bindParam(':lien_image', $lien_image);
             $stmt->execute();
-            $id_person = $conn->lastInsertId();
+            $noGeneologique = $conn->lastInsertId();
             // redirect to success page
-            header("Location: /?idperson='.$id_person.'");
+            header("Location: /?noGeneologique='.$noGeneologique.'");
             exit();
         } catch (PDOException $e) {
             echo $e;
         }
     }
     //The person exist already, We can update info
-    elseif (isset($_GET['idpersorn'])) {
-        $id_person = $_GET['idperson'];
+    elseif (isset($_GET['$noGeneologique'])) {
+        $id_person = $_GET['noGeneologique'];
         $form_title = '<h2>Mise à jour des informations pour ' . $nom . '</h2>';
         $value_btn_submit = "mise à jour";
         $btn_publish = '<button type="submit" name = "publish" class="btn btn-secondery">Rendre publique</button>';
-        $form_action = $permelink . '/?idperson=' . $id_person;
+        $form_action = $permelink . '/?noGeneologique=' . $id_person;
 
         //if submit button is clicked
         if (isset($_POST['submit']) && !empty($_POST['nom'])) {
-            $sql = "UPDATE persons SET
+            $sql = "UPDATE personnes SET
                 nom = :nom,
                 prenom = :prenom,
                 nom_jeune_fille= :nom_jeune_fille,
                 observation = :observation,
-                date_naisance = :date_naisance,
-                date_deces = :date_deces,
+                date_naissance = :date_naisance,                
                 lieu_naissance = :lieu_naissance,
                 date_mariage=:date_mariage,
                 lieu_mariage=:lieu_mariage,
+                date_deces = :date_deces,
                 note = :note,
                 lieu_dece = :lieu_dece,
                 note = :note,
                 lien_image = :lien_image
-                WHERE idpersones = :id";
+                WHERE noGeneologique = :id";
             try {
                 $conn = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET, DB_USER, DB_PASSWORD);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -233,7 +315,7 @@ function acck_genealogy()
   <input type="date" class="form-control" "name= date_mariage" id="date_mariage" value="' . $date_mariage . '" required>
 </div>
 <div class="col-md">
-  <label for="lieu_mariage">Observations</label>
+  <label for="lieu_mariage">Liu Mariage</label>
   <input type="text" class="form-control" id="lieu_mariage" name="lieu_mariage" value="' . $lieu_mariage . '" required>
 </div>
 </div>
@@ -241,7 +323,7 @@ function acck_genealogy()
   <div class="row">
   <div class="col-md">
   <label for="date_deces">Date de décès</label>
-  <input type="date" class="form-control" id="date_deces" name="date_deces" value="' . $date_deces . '" required>  
+  <input type="date" class="form-control" id="date_deces" name="date_deces" value="' . $date_deces . '">  
   </div>
   <div class="col-md">
     <label for="lieu_dece">Lieu de décès</label>
