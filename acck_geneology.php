@@ -16,9 +16,8 @@ function acck_genealogy()
     $content = '';
     //create tables if the do not exist table
     $sql_create='
-    DROP TABLE IF EXISTS `union` ;
 
-CREATE TABLE IF NOT EXISTS .`union` (
+CREATE TABLE IF NOT EXISTS `union` (
   `idunion` INT NOT NULL,
   `type_union` VARCHAR(45) NOT NULL,
   `date_debut` DATE NULL,
@@ -31,9 +30,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `relation`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `relation` ;
 
-CREATE TABLE IF NOT EXISTS .`relation` (
+CREATE TABLE IF NOT EXISTS `relation` (
   `id_relation` INT NOT NULL,
   `type_relation` VARCHAR(45) NULL,
   `id_parent` VARCHAR(45) NULL,
@@ -55,9 +53,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `personnes`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `personnes` ;
 
-CREATE TABLE IF NOT EXISTS .`personnes` (
+CREATE TABLE IF NOT EXISTS `personnes` (
   `noGeneologique` INT NOT NULL AUTO_INCREMENT,
   `nom` VARCHAR(45) NOT NULL,
   `prenom` VARCHAR(45) NOT NULL,
@@ -312,11 +309,11 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
   <div class="row">
   <div class="col-md">
   <label for="date_mariage">Date Marriage</label>
-  <input type="date" class="form-control" "name= date_mariage" id="date_mariage" value="' . $date_mariage . '" required>
+  <input type="date" class="form-control" "name= date_mariage" id="date_mariage" value="' . $date_mariage . '">
 </div>
 <div class="col-md">
   <label for="lieu_mariage">Liu Mariage</label>
-  <input type="text" class="form-control" id="lieu_mariage" name="lieu_mariage" value="' . $lieu_mariage . '" required>
+  <input type="text" class="form-control" id="lieu_mariage" name="lieu_mariage" value="' . $lieu_mariage . '">
 </div>
 </div>
   
@@ -327,13 +324,13 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
   </div>
   <div class="col-md">
     <label for="lieu_dece">Lieu de décès</label>
-    <input type="text" class="form-control" id="lieu_dece" name="lieu_dece" value="' . $lieu_dece . '" required>
+    <input type="text" class="form-control" id="lieu_dece" name="lieu_dece" value="' . $lieu_dece . '">
   </div>
   </div>
 
   <div class="form-group">
     <label for="notes">Notes</label>
-    <input type="text" class="form-control" id="notes" name="notes" value="' . $notes . '" required>
+    <input type="text" class="form-control" id="notes" name="notes" value="' . $notes . '">
   </div>
   <div class="form-group">
     <label for="image">Photo</label>
